@@ -13,5 +13,11 @@
   "license": "ISC",
   "devDependencies": {
     "jest": "^27.3.0"
+  },
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "jsonfile": "^6.1.0",
+    "loader": "^2.1.1",
+    "node-fetch": "^2.0.0"
   }
 }

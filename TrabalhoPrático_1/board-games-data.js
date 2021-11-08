@@ -1,28 +1,49 @@
-/* eslint-disable no-undef */
-const fetch = require('node-fetch')
+'use strict'
 
-const BOARD_GAME_HOST = 'https://www.boardgameatlas.com/api/'
-const CLIENT_ID = process.env.CLIENT_ID
-const BOARD_GAME_SEARCH = `search?client_id="`
+const { filterProperties } = require('./filterFunctions')
+const fetch = require('node-fetch')
+const fs = require('fs');
+
+const BOARD_GAME_HOST = 'https://api.boardgameatlas.com/api/'
+// const CLIENT_ID = process.env.ATLAS_CLIENT_ID
+const CLIENT_ID = 'uHI64CQKVf'
+const GAME_ID_SEARCH = 'search?ids='
+const CLIENT_ID_SEARCH = '&pretty=true&client_id='
 
 if(!CLIENT_ID) throw Error('Board Game CLIENT_ID not set!')
 
-module.exports = {
-    getBody: getBody
-}
-
-// access board game atlas api
-// make a request with url + given query
-// and when the request is done call the callback to represent data
-function getBody(query, sendResponse) {
-    const url = BOARD_GAME_HOST + BOARD_GAME_SEARCH + CLIENT_ID;
-    return fetch(url + query)
-        .then((res, error) => {
-            if (error || res.statusCode !== 200) {
-                return sendResponse(error, response.statusCode)
-            }
+function getBodybyId(game_id, callback) {
+    const searchProp = ['id', 'name', 'url'];
+    const url = BOARD_GAME_HOST + GAME_ID_SEARCH + game_id + CLIENT_ID_SEARCH + CLIENT_ID;
+    return fetch(url)
+        .then(res => res.text())
+        .then(body => JSON.parse(body))
+        .then(obj => { 
+            callback(filterProperties(searchProp, obj.games[0]));
         })
-        .then(obj => sendResponse(obj.toString(), response.statusCode))
 };
 
+function readTxt(txtFile) {
+    const data = fs.readFileSync(txtFile);
+    return data.toString().replace(/\r\n/g,'\n').split('\n');
+};
 
+function getBody() {
+    const gameIds = readTxt('gameIdsList.txt');
+    const result = [];
+    const length = gameIds.length;
+    Object.values(gameIds).filter(game_id => {
+        if(game_id) {
+            getBodybyId(game_id, function(res) {
+                if(result.length < length) {
+                    result.push(res);
+                }
+                if(result.length === length){
+                    fs.writeFile("output.json", JSON.stringify(result), () => {});
+                }
+            });
+        }
+    });
+};
+
+getBody();
