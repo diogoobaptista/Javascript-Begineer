@@ -5,8 +5,7 @@ const fetch = require('node-fetch')
 const fs = require('fs');
 
 const BOARD_GAME_HOST = 'https://api.boardgameatlas.com/api/'
-// const CLIENT_ID = process.env.ATLAS_CLIENT_ID
-const CLIENT_ID = 'uHI64CQKVf'
+const CLIENT_ID = process.env.ATLAS_CLIENT_ID
 const GAME_ID_SEARCH = 'search?ids='
 const CLIENT_ID_SEARCH = '&pretty=true&client_id='
 
