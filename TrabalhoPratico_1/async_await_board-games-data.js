@@ -26,7 +26,7 @@ function readTxt(txtFile) {
     return data.toString().replace(/\r\n/g,'\n').split('\n');
 };
 
-async function getBody() {
+async function createJsonFile() {
     let promises = [];
     try {
         const gameIds = readTxt('docs/gameIdsList.txt');
@@ -43,4 +43,4 @@ async function getBody() {
 }
 };
 
-getBody();
+createJsonFile();

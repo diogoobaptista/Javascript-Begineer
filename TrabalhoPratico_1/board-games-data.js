@@ -27,7 +27,7 @@ function readTxt(txtFile) {
     return data.toString().replace(/\r\n/g,'\n').split('\n');
 };
 
-function getBody() {
+function createJsonFile() {
     const gameIds = readTxt('./docs/gameIdsList.txt');
     const result = [];
     const length = gameIds.length;
@@ -45,4 +45,4 @@ function getBody() {
     });
 };
 
-getBody();
+createJsonFile();
