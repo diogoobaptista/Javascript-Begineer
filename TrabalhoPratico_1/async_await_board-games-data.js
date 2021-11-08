@@ -2,7 +2,7 @@
 
 const { filterProperties } = require('./filterFunctions')
 const fetch = require('node-fetch')
-const fs = require('fs');
+const fs = require('fs.promises');
 
 const BOARD_GAME_HOST = 'https://api.boardgameatlas.com/api/'
 const CLIENT_ID = process.env.ATLAS_CLIENT_ID
@@ -21,26 +21,39 @@ async function getBodybyId(game_id) {
     return filterProperties(searchProp, game);
 };
 
-function readTxt(txtFile) {
-    const data = fs.readFileSync(txtFile);
-    return data.toString().replace(/\r\n/g,'\n').split('\n');
-};
+
+function readFile() {
+    const pInput = fs.readFile('./docs/gameIdsList.txt')
+    return pInput.then(data => {
+        return data.toString().split('\r\n')
+    });
+}
+
+async function resolveAllPromisses(promises) {
+    try {
+        return await Promise.all(promises).then(valores=> {
+            return fs.writeFile("./docs/outputAsync.json", JSON.stringify(valores));
+        });
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 async function createJsonFile() {
-    let promises = [];
-    try {
-        const gameIds = readTxt('docs/gameIdsList.txt');
-        Object.values(gameIds).filter(game_id => {
-            if(game_id) {
-                promises.push(getBodybyId(game_id));
-            }
-        });
-        await Promise.all(promises).then(valores=> {
-            return fs.writeFile("./docs/outputAsync.json", JSON.stringify(valores), () => {});
-        });
-    } catch(e) {
-        console.log(e)
-}
-};
+        readFile().then(gameIds => {
+            const length = gameIds.length;    
+            let promises = [];
+            Object.values(gameIds).filter(game_id => {
+                if(game_id) {
+                    if(promises.length < length) {
+                        promises.push(getBodybyId(game_id));
+                    }
+                    if(promises.length === length){
+                        resolveAllPromisses(promises)
+                    }
+                }
+            });
+        })
+    }
 
 createJsonFile();
