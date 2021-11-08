@@ -29,7 +29,7 @@ function readTxt(txtFile) {
 };
 
 function getBody() {
-    const gameIds = readTxt('gameIdsList.txt');
+    const gameIds = readTxt('./docs/gameIdsList.txt');
     const result = [];
     const length = gameIds.length;
     Object.values(gameIds).filter(game_id => {
@@ -39,7 +39,7 @@ function getBody() {
                     result.push(res);
                 }
                 if(result.length === length){
-                    fs.writeFile("output.json", JSON.stringify(result), () => {});
+                    fs.writeFile("./docs/output.json", JSON.stringify(result), () => {});
                 }
             });
         }

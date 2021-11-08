@@ -30,14 +30,14 @@ function readTxt(txtFile) {
 async function getBody() {
     let promises = [];
     try {
-        const gameIds = readTxt('gameIdsList.txt');
+        const gameIds = readTxt('docs/gameIdsList.txt');
         Object.values(gameIds).filter(game_id => {
             if(game_id) {
                 promises.push(getBodybyId(game_id));
             }
         });
         await Promise.all(promises).then(valores=> {
-            return fs.writeFile("outputAsync.json", JSON.stringify(valores), () => {});
+            return fs.writeFile("./docs/outputAsync.json", JSON.stringify(valores), () => {});
         });
     } catch(e) {
         console.log(e)
